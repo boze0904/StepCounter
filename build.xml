@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+
+<project name="counter" default="compile" basedir=".">
+	<property name="src.home"       value="src"/>
+	<property name="deploy.home"    value="deploy"/>
+	<property name="release.home"   value="release"/>
+	<property name="javadoc.home"   value="javadoc"/>
+	<property name="lib.home"		value="lib"/>
+
+	<!-- コンパイル -->
+	<target name="compile" depends="prepare">
+		<javac srcdir="${src.home}"
+				destdir="${deploy.home}"
+				debug="on"
+				optimize="off"
+				deprecation="on"/>
+	</target>
+
+	<!-- クリーン -->
+	<target name="clean">
+		<delete dir="${deploy.home}"/>
+	</target>
+	<!-- ディレクトリの作成 -->
+	<target name="prepare">
+		<mkdir dir="${deploy.home}"/>
+	</target>
+	<!-- 全コンパイル -->
+	<target name="all" depends="clean,prepare,compile"/>
+
+	<!-- JavaDoc -->
+	<target name="javadoc">
+		<delete dir="${javadoc.home}"/>
+		<mkdir dir="${javadoc.home}"/>
+		<javadoc sourcepath="${src.home}"
+			destdir="${javadoc.home}"
+			author="true"
+			version="true"
+			use="true"
+			charset="Shift_JIS"/>
+	</target>
+
+	<!-- Jar -->
+	<target name="dist" depends="compile">
+		<delete dir="${release.home}"/>
+		<mkdir dir="${release.home}"/>
+		<jar jarfile="${release.home}/srccounter.jar"
+			basedir="${deploy.home}"
+			includes="**"
+			manifest="${src.home}/etc/MANIFEST.MF"/>
+	</target>
+
+	<!-- 実行 -->
+	<target name="counter">
+		<java classname="SrcCounter"
+			fork="true">
+			<jvmarg value="-Xmx256m" />
+			<jvmarg value="-XX:NewSize=128m" />
+			<jvmarg value="-XX:MaxNewSize=128m" />
+			<jvmarg value="-verbose:gc" />
+			<classpath>
+				<pathelement location="deploy;." />
+			</classpath>
+		</java>
+	</target>
+
+
+</project>

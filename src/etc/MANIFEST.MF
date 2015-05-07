@@ -1,0 +1,2 @@
+Main-Class: SrcCounter
+Class-Path: srccounter.jar
